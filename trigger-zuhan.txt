@@ -1,0 +1,43 @@
+CREATE or REPLACE TRIGGER trigger_timing
+BEFORE INSERT OR UPDATE OR DELETE ON TRANSACTION
+FOR EACH ROW
+BEGIN
+IF(TO_CHAR(SYSDATE,'DAY')in('FRI','SAT') or TO_CHAR(SYSDATE,'HH24') NOT BETWEEN '08' and '17') then
+null;
+else
+raise_application_error(-20500,'INVALID TIMING');
+end if;
+END;
+
+
+CREATE or REPLACE TRIGGER trigger_toll_timing
+BEFORE INSERT OR UPDATE OR DELETE ON TOLL
+FOR EACH ROW
+BEGIN
+IF(TO_CHAR(SYSDATE,'DAY')in('FRI','SAT') or TO_CHAR(SYSDATE,'HH24') NOT BETWEEN '08' and '17') then
+null;
+else
+raise_application_error(-20500,'INVALID TIMING');
+end if;
+END;
+
+
+CREATE OR REPLACE TRIGGER display_transaction_changes 
+BEFORE DELETE OR INSERT OR UPDATE ON TRANSACTION 
+FOR EACH ROW  
+DECLARE 
+BEGIN 
+   dbms_output.put_line('Previous transaction: ' || :OLD.amount); 
+   dbms_output.put_line('New transaction: ' || :NEW.amount); 
+END;
+
+
+CREATE OR REPLACE TRIGGER display_toll_changes 
+BEFORE DELETE OR INSERT OR UPDATE ON TOLL 
+FOR EACH ROW  
+DECLARE 
+BEGIN 
+   dbms_output.put_line('Previous place: ' || :OLD.place); 
+   dbms_output.put_line('New place: ' || :NEW.place); 
+END;
+
